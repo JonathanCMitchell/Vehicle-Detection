@@ -9,6 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from skimage.feature import hog
 from helpers import *
 from sklearn.model_selection import train_test_split
+import pickle
 import settings
 
 # Define a function to extract features from a single image window
@@ -110,19 +111,19 @@ cars = cars[0:sample_size]
 notcars = notcars[0:sample_size]
 
 ### TODO: Tweak these parameters and see how the results change.
-color_space = 'YCrCb'  # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
-orient = 9  # HOG orientations
-pix_per_cell = 6  # HOG pixels per cell
-cell_per_block = 2  # HOG cells per block
-hog_channel = "ALL"  # Can be 0, 1, 2, or "ALL"
-spatial_size = (16, 16)  # Spatial binning dimensions
-hist_bins = 16  # Number of histogram bins
-spatial_feat = True  # Spatial features on or off
-hist_feat = True  # Histogram features on or off
-hog_feat = True  # HOG features on or off
-y_vertical_offset = 30
-y_start_stop = [int(settings.IMG_HEIGHT/2) - y_vertical_offset, int(settings.IMG_HEIGHT)]  # Min and max in y to search in slide_window()
-
+# color_space = 'YCrCb'  # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
+# orient = 9  # HOG orientations
+# pix_per_cell = 6  # HOG pixels per cell
+# cell_per_block = 2  # HOG cells per block
+# hog_channel = "ALL"  # Can be 0, 1, 2, or "ALL"
+# spatial_size = (16, 16)  # Spatial binning dimensions
+# hist_bins = 16  # Number of histogram bins
+# spatial_feat = True  # Spatial features on or off
+# hist_feat = True  # Histogram features on or off
+# hog_feat = True  # HOG features on or off
+# y_vertical_offset = 30
+# y_start_stop = [int(settings.IMG_HEIGHT/2) - y_vertical_offset, int(settings.IMG_HEIGHT)]  # Min and max in y to search in slide_window()
+#
 
 
 car_features = extract_features(cars, color_space=color_space,
@@ -175,22 +176,36 @@ draw_image_2 = np.copy(image_2)
 
 
 
-# Loop through test images and test accuracy and visualize bounding boxes
-for i in range(5):
-    img = mpimg.imread('./test_images/test' + str(i + 1) + '.jpg')
-    draw_img = np.copy(img)
-    windows = slide_window(img, x_start_stop=[None, None], y_start_stop=y_start_stop,
-                       xy_window=(96, 96), xy_overlap=(0.5, 0.5))
+# # Loop through test images and test accuracy and visualize bounding boxes
+# for i in range(5):
+#     img = mpimg.imread('./test_images/test' + str(i + 1) + '.jpg')
+#     draw_img = np.copy(img)
+#     windows = slide_window(img, x_start_stop=[None, None], y_start_stop=y_start_stop,
+#                        xy_window=(96, 96), xy_overlap=(0.5, 0.5))
+#
+#     hot_windows = search_windows(img, windows, svc, X_scaler, color_space=color_space,
+#                              spatial_size=spatial_size, hist_bins=hist_bins,
+#                              orient=orient, pix_per_cell=pix_per_cell,
+#                              cell_per_block=cell_per_block,
+#                              hog_channel=hog_channel, spatial_feat=spatial_feat,
+#                              hist_feat=hist_feat, hog_feat=hog_feat)
+#
+#     window_img = draw_boxes(draw_img, hot_windows, color = (0, 0, 255), thick = 6)
+#     plt.imshow(window_img)
+#     plt.show()
 
-    hot_windows = search_windows(img, windows, svc, X_scaler, color_space=color_space,
-                             spatial_size=spatial_size, hist_bins=hist_bins,
-                             orient=orient, pix_per_cell=pix_per_cell,
-                             cell_per_block=cell_per_block,
-                             hog_channel=hog_channel, spatial_feat=spatial_feat,
-                             hist_feat=hist_feat, hog_feat=hog_feat)
+# Save things to pickle file
+data = {
+    'svc': svc,
+    'scaler': X_scaler,
+    'orient': orient,
+    'pix_per_cell': pix_per_cell,
+    'cell_per_block': cell_per_block,
+    'spatial_size': spatial_size,
+    'hist_bins': hist_bins
+}
 
-    window_img = draw_boxes(draw_img, hot_windows, color = (0, 0, 255), thick = 6)
-    plt.imshow(window_img)
-    plt.show()
+with open('svc_pickle.p', 'wb') as handle:
+    pickle.dump(data, handle, protocol = pickle.HIGHEST_PROTOCOL)
 
 
