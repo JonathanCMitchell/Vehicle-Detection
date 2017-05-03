@@ -13,7 +13,7 @@ from helpers import convert_color, \
 
 
 
-img = mpimg.imread('./test_images/test5.jpg')
+img = mpimg.imread('./test_images/test1.jpg')
 
 
 
@@ -34,18 +34,23 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     """
     After training our SVM, we utilize find_cars in conjunction with our SVM predictor to locate the cars
 
-    :param img:
-    :param ystart:
-    :param ystop:
-    :param scale:
-    :param svc:
-    :param X_scaler:
-    :param orient:
-    :param pix_per_cell:
-    :param cell_per_block:
-    :param spatial_size:
-    :param hist_bins:
-    :return:
+    :param img: Image passed in as RGB as shape (720, 1280, 3)
+    :param ystart: Starting point for search in y
+    :param ystop: Stopping point for search in y
+    :param scale: Scale to shrink or expand the search region
+    :param svc: Linear Support Vector Machine Classifier which was trained on training data in model.py
+    :param X_scaler: Linear SVC Scaler which was fit on the training data in model.py
+    :param orient: # of orientations, specified as an integer, represents the number of orientation bins that the 
+    gradient information will be split up into the histogram. Typically ~6 to 12 .
+    :param pix_per_cell: # of pixels per cell passed to HOG as (pix_per_cell, pix_per_cell) tuple. 
+    They are commonly chosen to be square
+    :param cell_per_block: number of cells per cell_block passed to HOG as (cell_per_block, cell_per_block) tuple. 
+    It specifies the local area over which the histogram counts in a given cell will be normalized.
+    :param spatial_size: tuple size passed into bin_spatial in helper.py, used to resize the image and determines
+     the length of the features return from bin_spatial after ravel()-ing
+    :param hist_bins: number of bins inside np.histogram of a specific channel inside the image, correlates to the resolution of the histogram features, 
+    each bin represents a value that has a corresponding feature, more bins = more features captured
+    :return: draw_img (720, 1280, 3) RGB copy of img that has boxes drawn on it by using cv2.rectangle
     """
     draw_img = np.copy(img)
     # img = img.astype(np.float32) / 255
@@ -56,6 +61,7 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
         imshape = ctrans_tosearch.shape
         ctrans_tosearch = cv2.resize(ctrans_tosearch, (np.int(imshape[1] / scale), np.int(imshape[0] / scale)))
 
+    # Channel extraction
     ch1 = ctrans_tosearch[:, :, 0]
     ch2 = ctrans_tosearch[:, :, 1]
     ch3 = ctrans_tosearch[:, :, 2]
@@ -82,9 +88,12 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
             ypos = yb * cells_per_step
             xpos = xb * cells_per_step
             # Extract HOG for this patch
+
+            # Flatten the HOG features for each channel position
             hog_feat1 = hog1[ypos:ypos + nblocks_per_window, xpos:xpos + nblocks_per_window].ravel()
             hog_feat2 = hog2[ypos:ypos + nblocks_per_window, xpos:xpos + nblocks_per_window].ravel()
             hog_feat3 = hog3[ypos:ypos + nblocks_per_window, xpos:xpos + nblocks_per_window].ravel()
+            # Build hog_features array by stacking each channel
             hog_features = np.hstack((hog_feat1, hog_feat2, hog_feat3))
 
             xleft = xpos * pix_per_cell
@@ -130,4 +139,5 @@ out_img = find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_ce
 
 
 plt.imshow(out_img)
+plt.title('HOG subsampling method on test1')
 plt.show()
