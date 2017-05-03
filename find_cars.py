@@ -9,10 +9,7 @@ from scipy.ndimage.measurements import label
 from helpers import convert_color, \
     get_hog_features, \
     bin_spatial, \
-    color_hist, \
-    draw_labeled_boxes, \
-    add_heat, \
-    apply_threshold
+    color_hist
 
 
 img = mpimg.imread('./test_images/test4.jpg')
@@ -29,6 +26,35 @@ cell_per_block = pickle_data['cell_per_block']
 spatial_size = pickle_data['spatial_size']
 hist_bins = pickle_data['hist_bins']
 
+def draw_labeled_boxes(img, labels, color = (0, 0, 255), thick = 6):
+    # Iterate through all detected cars
+    for car_number in range(1, labels[1]+1):
+        # Find pixels with each car_number label value
+        nonzero = (labels[0] == car_number).nonzero()
+        # Identify x and y values of those pixels
+        nonzeroy = np.array(nonzero[0])
+        nonzerox = np.array(nonzero[1])
+        # Define a bounding box based on min/max x and y
+        bbox = ((np.min(nonzerox), np.min(nonzeroy)), (np.max(nonzerox), np.max(nonzeroy)))
+        # Draw the box on the image
+        cv2.rectangle(img, bbox[0], bbox[1], color, thick)
+    # Return the image
+    return img
+
+
+def add_heat(heatmap, bbox_list):
+    """
+    Takes in a heatmap and bounding box list. Adds +1 to all pixels in the heatmap
+    and returns the updated heatmap
+    :param heatmap: 
+    :param bbox_list: bounding box list:list of boxes of form [((x1, y1), (x2, y2)), ...]
+    :return: upated heatmap
+    """
+    # Iterate through list of boxes
+    for box in bbox_list:
+        # box[y1:y2, x1:x2] += 1
+        heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
+    return heatmap
 
 
 class Car_Finder():
@@ -36,7 +62,7 @@ class Car_Finder():
         self.ystart = ystart
         self.ystop = ystop
         self.scale = scale
-        self.threshold = 2
+        self.threshold = 10
         self.smooth_factor = 2
         self.heatmaps = []
         self.heat = np.zeros((settings.IMG_HEIGHT, settings.IMG_WIDTH), dtype = np.float32) # maybe chance dtype
@@ -51,7 +77,7 @@ class Car_Finder():
         heatmap = np.clip(heat, 0, 255)
         labels = label(heatmap)
         draw_img = draw_labeled_boxes(np.copy(img), labels)
-        return draw_img
+        return draw_img, heatmap
 
     def build_and_update_heatmap(self, bboxes):
         self.heat = add_heat(self.heat, bboxes)
@@ -64,7 +90,8 @@ class Car_Finder():
         #     # print('there are at least 7 heatmaps')
         # else:
         heatmap = self.heat
-        return apply_threshold(heatmap, threshold)
+        heatmap[heatmap <= threshold] = 0
+        return heatmap
 
     def find_cars(self, img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size,
                   hist_bins):
@@ -158,4 +185,5 @@ class Car_Finder():
                     bboxes.append(
                         ((xbox_left, ytop_draw + ystart), (xbox_left + win_draw, ytop_draw + win_draw + ystart)))
         return bboxes
+
 
