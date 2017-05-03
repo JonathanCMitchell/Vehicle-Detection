@@ -37,6 +37,7 @@ class Car_Finder():
         self.ystop = ystop
         self.scale = scale
         self.threshold = 2
+        self.smooth_factor = 2
         self.heatmaps = []
         self.heat = np.zeros((settings.IMG_HEIGHT, settings.IMG_WIDTH), dtype = np.float32) # maybe chance dtype
 
@@ -59,8 +60,9 @@ class Car_Finder():
         self.heatmaps.append(self.heat)
 
     def apply_threshold(self, threshold):
-        if len(self.heatmaps) > 7:
+        if len(self.heatmaps) > self.smooth_factor:
             # TODO: Set heatmap equal to average of last 7 heatmaps
+            heatmap = np.mean(self.heatmaps[-self.smooth_factor:], axis = 0).astype(np.float32)
             print('there are at least 7 heatmaps')
         else:
             heatmap = self.heat
