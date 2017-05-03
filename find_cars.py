@@ -58,12 +58,12 @@ class Car_Finder():
         self.heatmaps.append(self.heat)
 
     def apply_threshold(self, threshold):
-        if len(self.heatmaps) > self.smooth_factor:
-            # TODO: Set heatmap equal to average of last 7 heatmaps
-            heatmap = np.mean(self.heatmaps[-self.smooth_factor:], axis = 0).astype(np.float32)
-            # print('there are at least 7 heatmaps')
-        else:
-            heatmap = self.heat
+        # if len(self.heatmaps) > self.smooth_factor:
+        #     # TODO: Set heatmap equal to average of last 7 heatmaps
+        #     heatmap = np.mean(self.heatmaps[-self.smooth_factor:], axis = 0).astype(np.float32)
+        #     # print('there are at least 7 heatmaps')
+        # else:
+        heatmap = self.heat
         return apply_threshold(heatmap, threshold)
 
     def find_cars(self, img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size,
