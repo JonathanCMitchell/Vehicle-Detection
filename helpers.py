@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 from skimage.feature import hog
 import settings
-
+from tqdm import tqdm
 # Basic cv2 color converter
 def convert_color(img, conv='RGB2YCrCb'):
     if conv == 'RGB2YCrCb':
@@ -65,22 +65,24 @@ def extract_features(imgs, color_space=settings.color_space, spatial_size=settin
     # Create a list to append feature vectors to
     features = []
     # Iterate through the list of images
-    for file in imgs:
+    for file in tqdm(imgs):
         file_features = []
         # Read in each one by one
-        image = mpimg.imread(file)
+        image = cv2.imread(file)
         # apply color conversion if other than 'RGB'
-        if color_space != 'RGB':
+        if color_space != 'BGR':
             if color_space == 'HSV':
-                feature_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+                feature_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
             elif color_space == 'LUV':
-                feature_image = cv2.cvtColor(image, cv2.COLOR_RGB2LUV)
+                feature_image = cv2.cvtColor(image, cv2.COLOR_BGR2LUV)
             elif color_space == 'HLS':
-                feature_image = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
+                feature_image = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
             elif color_space == 'YUV':
-                feature_image = cv2.cvtColor(image, cv2.COLOR_RGB2YUV)
+                feature_image = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
             elif color_space == 'YCrCb':
-                feature_image = cv2.cvtColor(image, cv2.COLOR_RGB2YCrCb)
+                feature_image = cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
+            elif color_space == 'RGB':
+                feature_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         else:
             feature_image = np.copy(image)
 

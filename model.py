@@ -12,36 +12,29 @@ from sklearn.model_selection import train_test_split
 import pickle
 import settings
 
-# Read in cars and notcars
-cars = []
-notcars = []
-images = glob.glob('./data/small_dataset/*/*/*.jpeg')
-for image in images:
-    if 'image' in image or 'extra' in image:
-        notcars.append(image)
-    else:
-        cars.append(image)
+notcars =[x for x in  glob.glob('./data/non-vehicles/*/*.png')]
+cars = [x for x in glob.glob('./data/vehicles/*/*.png')]
 
-sample_size = 500
-cars = cars[0:sample_size]
-notcars = notcars[0:sample_size]
 
 class model():
-    def __init__(self):
+    def __init__(self, cars_paths, notcars_paths):
         self.features = None
         self.X_scaler = None
         self.svc = None
+        self.cars_paths = cars_paths
+        self.notcars_paths = notcars_paths
+
 
     def predict(self):
         pass
     def get_features(self):
-        car_features = extract_features(cars, color_space=settings.color_space,
+        car_features = extract_features(self.cars_paths, color_space=settings.color_space,
                                 spatial_size=settings.spatial_size, hist_bins=settings.hist_bins,
                                 orient=settings.orient, pix_per_cell=settings.pix_per_cell,
                                 cell_per_block=settings.cell_per_block,
                                 hog_channel=settings.hog_channel, spatial_feat=settings.spatial_feat,
                                 hist_feat=settings.hist_feat, hog_feat=settings.hog_feat)
-        notcar_features = extract_features(notcars, color_space=settings.color_space,
+        notcar_features = extract_features(self.notcars_paths, color_space=settings.color_space,
                                    spatial_size=settings.spatial_size, hist_bins=settings.hist_bins,
                                    orient=settings.orient, pix_per_cell=settings.pix_per_cell,
                                    cell_per_block=settings.cell_per_block,
@@ -78,12 +71,13 @@ class model():
         t2 = time.time()
         print(round(t2 - t, 5), 'Seconds to predict', n_predict, 'labels with SVC')
 
-mod = model()
+mod = model(cars, notcars)
 mod.get_features()
 mod.train()
 mod.test_accuracy()
 svc = mod.svc
 X_scaler = mod.X_scaler
+print('done!')
 
 data = {
     'svc': svc,

@@ -51,8 +51,6 @@ class Car_Finder():
         heatmap = np.clip(heat, 0, 255)
         labels = label(heatmap)
         draw_img = draw_labeled_boxes(np.copy(img), labels)
-        plt.imshow(labels[0], cmap='gray')
-        plt.show()
         return draw_img
 
     def build_and_update_heatmap(self, bboxes):
@@ -63,7 +61,7 @@ class Car_Finder():
         if len(self.heatmaps) > self.smooth_factor:
             # TODO: Set heatmap equal to average of last 7 heatmaps
             heatmap = np.mean(self.heatmaps[-self.smooth_factor:], axis = 0).astype(np.float32)
-            print('there are at least 7 heatmaps')
+            # print('there are at least 7 heatmaps')
         else:
             heatmap = self.heat
         return apply_threshold(heatmap, threshold)
