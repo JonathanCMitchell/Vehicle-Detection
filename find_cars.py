@@ -159,11 +159,3 @@ class Car_Finder():
                         ((xbox_left, ytop_draw + ystart), (xbox_left + win_draw, ytop_draw + win_draw + ystart)))
         return bboxes
 
-
-cf = Car_Finder()
-out_img = cf.process_image(img)
-
-
-
-# plt.imshow(out_img)
-# plt.show()
