@@ -9,7 +9,8 @@ import settings
 from helpers import convert_color, \
     get_hog_features, \
     bin_spatial, \
-    color_hist
+    color_hist, \
+    draw_boxes
 
 
 
@@ -83,6 +84,8 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     hog2 = get_hog_features(ch2, orient, pix_per_cell, cell_per_block, feature_vec=False)
     hog3 = get_hog_features(ch3, orient, pix_per_cell, cell_per_block, feature_vec=False)
 
+    bboxes = []
+
     for xb in range(nxsteps):
         for yb in range(nysteps):
             ypos = yb * cells_per_step
@@ -116,9 +119,8 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
                 xbox_left = np.int(xleft * scale)
                 ytop_draw = np.int(ytop * scale)
                 win_draw = np.int(window * scale)
-                cv2.rectangle(draw_img, (xbox_left, ytop_draw + ystart),
-                              (xbox_left + win_draw, ytop_draw + win_draw + ystart), (0, 0, 255), 6)
-
+                bboxes.append(((xbox_left, ytop_draw + ystart), (xbox_left + win_draw, ytop_draw + win_draw + ystart)))
+    draw_img = draw_boxes(draw_img, bboxes)
     return draw_img
 
 
