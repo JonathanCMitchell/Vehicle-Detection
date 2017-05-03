@@ -110,3 +110,12 @@ def extract_features(imgs, color_space=settings.color_space, spatial_size=settin
         features.append(np.concatenate(file_features))
     # Return list of feature vectors
     return features
+
+def draw_centroids(img, centroids, color=(0, 0, 255), thick=6):
+    # Iterate through the bounding boxes
+    for centroid in centroids:
+        # Draw a rectangle given bbox coordinates
+        cv2.rectangle(img, (centroid[0], centroid[1]),
+                                (centroid[2], centroid[3]), color, thick)
+    # Return the image copy with boxes drawn
+    return img

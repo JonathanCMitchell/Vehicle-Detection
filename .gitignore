@@ -6,3 +6,5 @@ first.py
 first.ipynb
 /results/
 *.mp4
+/project_video_data/
+__pycache__/

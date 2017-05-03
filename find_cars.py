@@ -9,10 +9,9 @@ from scipy.ndimage.measurements import label
 from helpers import convert_color, \
     get_hog_features, \
     bin_spatial, \
-    color_hist
+    color_hist, \
+    draw_centroids
 
-
-img = mpimg.imread('./test_images/test4.jpg')
 
 
 
@@ -42,19 +41,6 @@ def draw_labeled_boxes(img, labels, color = (0, 0, 255), thick = 6):
     return img
 
 
-def add_heat(heatmap, bbox_list):
-    """
-    Takes in a heatmap and bounding box list. Adds +1 to all pixels in the heatmap
-    and returns the updated heatmap
-    :param heatmap: 
-    :param bbox_list: bounding box list:list of boxes of form [((x1, y1), (x2, y2)), ...]
-    :return: upated heatmap
-    """
-    # Iterate through list of boxes
-    for box in bbox_list:
-        # box[y1:y2, x1:x2] += 1
-        heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
-    return heatmap
 
 
 class Car_Finder():
@@ -65,33 +51,64 @@ class Car_Finder():
         self.threshold = 10
         self.smooth_factor = 2
         self.heatmaps = []
+        self.centroids = []
+        self.count = 0
         self.heat = np.zeros((settings.IMG_HEIGHT, settings.IMG_WIDTH), dtype = np.float32) # maybe chance dtype
 
+
     def process_image(self, img):
-        bboxes = self.find_cars(img, self.ystart, self.ystop, self.scale, svc, X_scaler, orient, pix_per_cell, cell_per_block,
-                  spatial_size,
-                  hist_bins)
+        self.count += 1
+        centroid_rectangles = self.get_centroid_rectangles(img)
+        self.centroids.append(centroid_rectangles)
+        #
+        # if len(self.centroids) > 7:
+        #     mean_centroid = np.mean(self.centroids[-self.smooth_factor:], axis = 0)
+        #     good_rectangles = list(filter(lambda c: abs(c - mean_centroid) < (500, 500, 500, 500)
+        #                                   ), self.centroids[-self.smooth_factor])
+        #     print('triggered: ')
 
-        self.build_and_update_heatmap(bboxes)
-        heat = self.apply_threshold(self.threshold)
-        heatmap = np.clip(heat, 0, 255)
-        labels = label(heatmap)
-        draw_img = draw_labeled_boxes(np.copy(img), labels)
-        return draw_img, heatmap
+        draw_img_centroids = draw_centroids(img, centroid_rectangles)
+        # labels = label(heat)
+        # draw_img = draw_labeled_boxes(np.copy(img), labels)
+        return draw_img_centroids
 
-    def build_and_update_heatmap(self, bboxes):
-        self.heat = add_heat(self.heat, bboxes)
-        self.heatmaps.append(self.heat)
+    def get_centroid_rectangles(self, img):
+        centroid_rectangles = []
+        detections = self.find_cars(img, self.ystart, self.ystop, self.scale, svc, X_scaler, orient, pix_per_cell,
+                                    cell_per_block,
+                                    spatial_size,
+                                    hist_bins)
 
-    def apply_threshold(self, threshold):
+        # Reset heat maps
+        # self.reset_heatmaps()
+        self.update_heatmap(detections)
+
+        binary = self.apply_threshold(self.heat.astype(np.uint8), self.threshold)
+        _, contours, hier = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        for contour in contours:
+            rect = cv2.boundingRect(contour)
+            if rect[2] < 50 or rect[3] < 50: continue
+            x, y, w, h = rect
+            centroid_rectangles.append([x, y, x+w, y+h])
+        # Now heatmap is binary so we apply contours
+        return centroid_rectangles
+
+    def reset_heatmaps(self):
+        self.heat = np.zeros((settings.IMG_HEIGHT, settings.IMG_WIDTH), dtype = np.float32) # maybe chance dtype
+        self.heatmaps = []
+
+    def update_heatmap(self, detections):
+        for (x1, y1, x2, y2) in detections:
+            self.heat[y1:y2, x1:x2] += 1
+
+
+    def apply_threshold(self, heatmap, threshold):
+        # TODO: Impement next two line averaging function
         # if len(self.heatmaps) > self.smooth_factor:
-        #     # TODO: Set heatmap equal to average of last 7 heatmaps
         #     heatmap = np.mean(self.heatmaps[-self.smooth_factor:], axis = 0).astype(np.float32)
-        #     # print('there are at least 7 heatmaps')
-        # else:
-        heatmap = self.heat
-        heatmap[heatmap <= threshold] = 0
-        return heatmap
+        # Threshold
+        _, binary = cv2.threshold(heatmap, 11, 255, cv2.THRESH_BINARY)
+        return binary
 
     def find_cars(self, img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size,
                   hist_bins):
@@ -117,8 +134,6 @@ class Car_Finder():
         :return: draw_img (720, 1280, 3) RGB copy of img that has boxes drawn on it by using cv2.rectangle
         """
         draw_img = np.copy(img)
-        # img = img.astype(np.float32) / 255
-
         img_tosearch = img[ystart:ystop, :, :]
         ctrans_tosearch = convert_color(img_tosearch, conv='RGB2YCrCb')
         if scale != 1:
@@ -148,6 +163,7 @@ class Car_Finder():
         hog3 = get_hog_features(ch3, orient, pix_per_cell, cell_per_block, feature_vec=False)
 
         bboxes = []
+        detections = []
 
         for xb in range(nxsteps):
             for yb in range(nysteps):
@@ -177,13 +193,17 @@ class Car_Finder():
                     np.hstack((spatial_features, hist_features, hog_features)).reshape(1, -1))
                 # test_features = X_scaler.transform(np.hstack((shape_feat, hist_feat)).reshape(1, -1))
                 test_prediction = svc.predict(test_features)
+                confidence = svc.decision_function(test_features)
 
-                if test_prediction == 1:
+                if test_prediction == 1 and confidence > 0.6:
                     xbox_left = np.int(xleft * scale)
                     ytop_draw = np.int(ytop * scale)
                     win_draw = np.int(window * scale)
-                    bboxes.append(
-                        ((xbox_left, ytop_draw + ystart), (xbox_left + win_draw, ytop_draw + win_draw + ystart)))
-        return bboxes
+                    x1 = xbox_left
+                    y1 = ytop_draw + ystart
+                    x2 = xbox_left + win_draw
+                    y2 = ytop_draw + win_draw + ystart
+                    detections.append((x1, y1, x2, y2))
+        return detections
 
 
