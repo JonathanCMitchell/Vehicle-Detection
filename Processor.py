@@ -10,14 +10,14 @@ import time
 df = pd.read_csv('./project_video_data/driving.csv')
 cf = Car_Finder()
 #
-# start = 350
-# stop = 500
+# start = 300
+# stop = 355
 # for i in tqdm(range(start, stop)):
 #     impath = df.iloc[[i]]['image_path'].values[0]
 #     img = mpimg.imread(impath)
-#     image = cf.process_image(img)
+#     image, heatmap = cf.process_image(img)
 #     cv2.imwrite('./results/images/' + str(i) + 'image' + '.jpg', cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-    # cv2.imwrite('./results/heatmaps/'+ str(i) + 'heatmap' + '.jpg', heatmap)
+#     cv2.imwrite('./results/heatmaps/'+ str(i) + 'heatmap' + '.jpg', heatmap)
 
 ## img = mpimg.imread('./test_images/test1.jpg')
 #
@@ -42,7 +42,7 @@ cf = Car_Finder()
 from moviepy.editor import VideoFileClip
 
 t = time.time()
-test_output = 'project_video_output_X4.mp4'
+test_output = 'project_video_output_X8.mp4'
 clip1 = VideoFileClip("project_video.mp4")
 cf = Car_Finder()
 white_clip = clip1.fl_image(cf.process_image) #NOTE: this function expects color images!!
