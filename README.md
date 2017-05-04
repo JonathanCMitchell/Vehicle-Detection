@@ -55,7 +55,8 @@ Some example images for testing your pipeline on single frames are located in th
 ##### In Car_Finder.find_cars
 * Grid out a section of the image (height from 400 to 656) and all width.  (line 138)
 * Extract the HOG features for the entire section of the image
-# TODO: insert HOG_subsample_search_region.png add (you can see the regions here)
+# TODO: insert ./output_imagesHOG_subsample_search_region.png add (you can see the regions here)
+* Above: You can see the region we are using for our sub image
 * Scale the extracted section by a `scale` parameter (line 142)
 * Extract each channel from the scaled image
 * Calculate the number of blocks in x and y
@@ -83,6 +84,9 @@ Some example images for testing your pipeline on single frames are located in th
 * Take in the output from `Car_Finder.find_cars` (which are the detection coordinates above)
 * Reset the heatmap if 20 frames have passed since our last reset
 * Take in the detection coordinates and update the heatmap by adding 5 to each value within the heatmap's bounding box
+# TODO: Show ./output_images/HOG_subsampling_on_test1
+* Above, as you can see we have more than one bounding box. Therefore we need to apply a heatmap in order to determine an accurate region for the vehicle and only draw one box
+
 # TODO: Show heatmap and car side by side image
 * As you can see, sometimes we get detections that are false positives, in order to remove these false positives we apply a thresholding function
 * Remove the values where the heatmap's values are < 20. So it takes ~4 heat maps to pass through the thresholder
@@ -90,7 +94,8 @@ Some example images for testing your pipeline on single frames are located in th
 * Averaging allows us to rule out bad values and creates a smoother transition between frames
 * Then we find the contours for the binary image, (which are basically the large shapes created from the heatmap)
 * Then we create bounding boxes from these contours
-* If the bounding boxes have a coordinate that is < 50, that means it is on the left side of the road (the opposing highway) and we don't want to keep that detection in our heatmap so we rule it out
+# TODO: Insert ./output_images/HOG_subsampling_on_test4
+* Above you can see that we have some false positives in the opposing lane, therefore we will rule out any boxes that occur at width < 50 because this area corresponds to the opposing highway. We do this on line 91 
 * Grab the coordinates of the bounding box and append them to `centroid_rectangles` which we will pass to our `draw_centroids` helper function
 ##### Draw Centroids (in helpers.py)
 * Get the centroid coordinates and the original image and draw a rectangle with the coordinates given
@@ -107,7 +112,10 @@ THE END
 
 # TODO: insert parameter selections below
 #### Details (Parameter selection) (tuning params.ods)
-
+# TODO: insert ./output_images/YCrCb detection using All Channel
+* This gives us the best result with an accuracy of # TODO: Insert accuracy
+# TODO: Insert ./output_images/LUV_detection_L_channel
+# TODO: Insert ./output_images/LUV_detection_V_channel 
 
 
 
