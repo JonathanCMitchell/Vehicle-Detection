@@ -57,7 +57,7 @@ Some example images for testing your pipeline on single frames are located in th
 * Extract the HOG features for the entire section of the image
 # TODO: insert ./output_imagesHOG_subsample_search_region.png add (you can see the regions here)
 * ![HOG_subsample](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsample_search_region.png)
-* Above: You can see the region we are using for our sub image
+* Above: You can see the region we are using for our sub image between the light and dark blue lines
 * Scale the extracted section by a `scale` parameter (line 142)
 * Extract each channel from the scaled image
 * Calculate the number of blocks in x and y
@@ -86,6 +86,7 @@ Some example images for testing your pipeline on single frames are located in th
 * Reset the heatmap if 20 frames have passed since our last reset
 * Take in the detection coordinates and update the heatmap by adding 5 to each value within the heatmap's bounding box
 # TODO: Show ./output_images/HOG_subsampling_on_test1
+* ![hog_subsampling_on_test1](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsampling_on_test1.png)
 * Above, as you can see we have more than one bounding box. Therefore we need to apply a heatmap in order to determine an accurate region for the vehicle and only draw one box
 
 # TODO: Show heatmap and car side by side image
