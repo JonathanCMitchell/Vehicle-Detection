@@ -8,3 +8,17 @@ first.ipynb
 *.mp4
 /project_video_data/
 __pycache__/
+
+.idea/
+FeatureExtraction.ipynb
+HOG_subsampling_on_test2.png
+HOG_subsampling_on_test3.png
+HOG_subsampling_test5.png
+Project_Video_data/
+YCrCb_detection_ALL_Channel_2.png
+YCrCb_detection_ALL_Channel_3.png
+YCrCb_detection_ALL_Channel_4.png
+YCrCb_detection_ALL_Channel_5.png
+YCrCb_detection_Y_Channel.png
+svc_pickle.p
+tuning_params.ods
