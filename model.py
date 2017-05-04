@@ -24,9 +24,6 @@ class model():
         self.cars_paths = cars_paths
         self.notcars_paths = notcars_paths
 
-
-    def predict(self):
-        pass
     def get_features(self):
         car_features = extract_features(self.cars_paths, color_space=settings.color_space,
                                 spatial_size=settings.spatial_size, hist_bins=settings.hist_bins,

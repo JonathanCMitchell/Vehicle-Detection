@@ -149,7 +149,6 @@ class Car_Finder():
         # Define blocks and steps as above
         nxblocks = (ch1.shape[1] // pix_per_cell) - cell_per_block + 1
         nyblocks = (ch1.shape[0] // pix_per_cell) - cell_per_block + 1
-        nfeat_per_block = orient * cell_per_block ** 2
 
         # 64 was the orginal sampling rate, with 8 cells and 8 pix per cell
         window = 64
@@ -162,8 +161,6 @@ class Car_Finder():
         hog1 = get_hog_features(ch1, orient, pix_per_cell, cell_per_block, feature_vec=False)
         hog2 = get_hog_features(ch2, orient, pix_per_cell, cell_per_block, feature_vec=False)
         hog3 = get_hog_features(ch3, orient, pix_per_cell, cell_per_block, feature_vec=False)
-
-        bboxes = []
         detections = []
 
         for xb in range(nxsteps):
@@ -192,7 +189,6 @@ class Car_Finder():
                 # Scale features and make a prediction
                 test_features = X_scaler.transform(
                     np.hstack((spatial_features, hist_features, hog_features)).reshape(1, -1))
-                # test_features = X_scaler.transform(np.hstack((shape_feat, hist_feat)).reshape(1, -1))
                 test_prediction = svc.predict(test_features)
                 confidence = svc.decision_function(test_features)
 

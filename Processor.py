@@ -42,7 +42,7 @@ cf = Car_Finder()
 from moviepy.editor import VideoFileClip
 
 t = time.time()
-test_output = 'project_video_output_X2.mp4'
+test_output = 'project_video_output_X4.mp4'
 clip1 = VideoFileClip("project_video.mp4")
 cf = Car_Finder()
 white_clip = clip1.fl_image(cf.process_image) #NOTE: this function expects color images!!
