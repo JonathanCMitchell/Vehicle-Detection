@@ -5,7 +5,7 @@
 * Processor.py (overlaying processor that runs the pipeline on a video stream input)
 * settings.py (settings for tuned parameters)
 * find_cars.py (contains Car_Finder class that applies the model to detect cars and draws rectangular boxes on images)
-
+* helpers.py (contains helper functions for feature extraction)
 ## Training data:
 * Our training dataset consists of 17760 images. 8792 non-vehicles and 8968 vehicles. We split our training and validation sets with 80% 20% respectively. So our training dataset was ~14208 images.
 
