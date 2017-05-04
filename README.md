@@ -100,6 +100,8 @@ Some example images for testing your pipeline on single frames are located in th
 ##### Draw Centroids (in helpers.py)
 * Get the centroid coordinates and the original image and draw a rectangle with the coordinates given
 * Return this image.
+* Note: I got the idea to find the contours from [Kyle Stewart-Frantz](https://github.com/kylesf)
+
 
 #### Helper functions (in helpers.py)
 * <strong>Extract_features</strong> (lines 61 - 112). This function takes in list of image paths, reads the images, then extracts the spatial, histogram, and hog features of those images and saves them. This occurs in our preprocessing pipeline when we are training the model. Our SVM does not extract features itself, so we have to extract them from images, similar to how a multi-layer perceptron works, in contrast with how CNN's work.
