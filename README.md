@@ -85,18 +85,17 @@ Some example images for testing your pipeline on single frames are located in th
 * Take in the output from `Car_Finder.find_cars` (which are the detection coordinates above)
 * Reset the heatmap if 20 frames have passed since our last reset
 * Take in the detection coordinates and update the heatmap by adding 5 to each value within the heatmap's bounding box
-# TODO: Show ./output_images/HOG_subsampling_on_test1
 * ![hog_subsampling_on_test1](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsampling_on_test1.png)
 * Above, as you can see we have more than one bounding box. Therefore we need to apply a heatmap in order to determine an accurate region for the vehicle and only draw one box
 
-# TODO: Show heatmap and car side by side image
+* ![image_heatmap_sidebyside](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/processed_test_img1_and_heatmap.png)
 * As you can see, sometimes we get detections that are false positives, in order to remove these false positives we apply a thresholding function
 * Remove the values where the heatmap's values are < 20. So it takes ~4 heat maps to pass through the thresholder
 * Before we threshold, we take an average of the last 20 heat maps if 20 heat maps have been saved, then we insert this map into our thresholder
 * Averaging allows us to rule out bad values and creates a smoother transition between frames
 * Then we find the contours for the binary image, (which are basically the large shapes created from the heatmap)
 * Then we create bounding boxes from these contours
-# TODO: Insert ./output_images/HOG_subsampling_on_test4
+* ![HOG_subsampling_on_test4](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsampling_on_test4.png)
 * Above you can see that we have some false positives in the opposing lane, therefore we will rule out any boxes that occur at width < 50 because this area corresponds to the opposing highway. We do this on line 91 
 * Grab the coordinates of the bounding box and append them to `centroid_rectangles` which we will pass to our `draw_centroids` helper function
 ##### Draw Centroids (in helpers.py)
@@ -114,10 +113,13 @@ THE END
 
 # TODO: insert parameter selections below
 #### Details (Parameter selection) (tuning params.ods)
-# TODO: insert ./output_images/YCrCb detection using All Channel
+* ![YCrCb_allChannel](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/YCrCb_detection_ALL_Channel.png)
+# TODO: Write description for ALL channel YCrCb
 * This gives us the best result with an accuracy of # TODO: Insert accuracy
-# TODO: Insert ./output_images/LUV_detection_L_channel
-# TODO: Insert ./output_images/LUV_detection_V_channel 
+* ![LUV_detection_L_channel](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/LUV_detection_L_channel.png)
+# TODO: Write description for LUV_detection_L_channel
+* ![LUV_detection_V_channel](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/LUV_detection_V_channel.png)
+# TODO: Write description for LUV_detection_V_channel 
 
 
 
