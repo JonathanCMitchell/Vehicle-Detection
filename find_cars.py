@@ -49,9 +49,9 @@ class Car_Finder():
         self.ystop = ystop
         self.scale = scale
         self.threshold = 10
-        self.smooth_factor = 2
+        self.smooth_factor = 20
         self.heatmaps = []
-        self.centroids = []
+        self.recent_detections = []
         self.count = 0
         self.heat = np.zeros((settings.IMG_HEIGHT, settings.IMG_WIDTH), dtype = np.float32) # maybe chance dtype
 
@@ -59,13 +59,6 @@ class Car_Finder():
     def process_image(self, img):
         self.count += 1
         centroid_rectangles = self.get_centroid_rectangles(img)
-        self.centroids.append(centroid_rectangles)
-        #
-        # if len(self.centroids) > 7:
-        #     mean_centroid = np.mean(self.centroids[-self.smooth_factor:], axis = 0)
-        #     good_rectangles = list(filter(lambda c: abs(c - mean_centroid) < (500, 500, 500, 500)
-        #                                   ), self.centroids[-self.smooth_factor])
-        #     print('triggered: ')
 
         draw_img_centroids = draw_centroids(img, centroid_rectangles)
         # labels = label(heat)
@@ -73,17 +66,25 @@ class Car_Finder():
         return draw_img_centroids
 
     def get_centroid_rectangles(self, img):
+        # TODO: Reset heat map each time
+        self.reset_heatmaps()
         centroid_rectangles = []
         detections = self.find_cars(img, self.ystart, self.ystop, self.scale, svc, X_scaler, orient, pix_per_cell,
                                     cell_per_block,
                                     spatial_size,
                                     hist_bins)
-
-        # Reset heat maps
-        # self.reset_heatmaps()
         self.update_heatmap(detections)
+        self.heatmaps.append(self.heat)
 
-        binary = self.apply_threshold(self.heat.astype(np.uint8), self.threshold)
+        # instead of self.heat use average of last 20 heat maps
+        if len(self.heatmaps) > self.smooth_factor:
+            heat = np.mean(self.heatmaps[-self.smooth_factor:], axis = 0).astype(np.uint8)
+        else:
+            heat = self.heat.astype(np.uint8)
+
+
+        binary = self.apply_threshold(heat, self.threshold)
+
         _, contours, hier = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         for contour in contours:
             rect = cv2.boundingRect(contour)
@@ -94,13 +95,13 @@ class Car_Finder():
         return centroid_rectangles
 
     def reset_heatmaps(self):
-        self.heat = np.zeros((settings.IMG_HEIGHT, settings.IMG_WIDTH), dtype = np.float32) # maybe chance dtype
-        self.heatmaps = []
+        # Reset heatmaps every 30 frames (20 frames also works)
+        if self.count % 20 == 0:
+            self.heat = np.zeros((settings.IMG_HEIGHT, settings.IMG_WIDTH), dtype = np.float32) # maybe chance dtype
 
     def update_heatmap(self, detections):
         for (x1, y1, x2, y2) in detections:
-            self.heat[y1:y2, x1:x2] += 1
-
+            self.heat[y1:y2, x1:x2] += 5
 
     def apply_threshold(self, heatmap, threshold):
         # TODO: Impement next two line averaging function

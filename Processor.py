@@ -5,17 +5,18 @@ from find_cars import Car_Finder
 import pandas as pd
 import cv2
 from tqdm import tqdm
+import time
 
 df = pd.read_csv('./project_video_data/driving.csv')
 cf = Car_Finder()
-
-start = 100
-stop = 500
-for i in tqdm(range(start, stop)):
-    impath = df.iloc[[i]]['image_path'].values[0]
-    img = mpimg.imread(impath)
-    image = cf.process_image(img)
-    cv2.imwrite('./results/images/' + str(i) + 'image' + '.jpg', cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+#
+# start = 350
+# stop = 500
+# for i in tqdm(range(start, stop)):
+#     impath = df.iloc[[i]]['image_path'].values[0]
+#     img = mpimg.imread(impath)
+#     image = cf.process_image(img)
+#     cv2.imwrite('./results/images/' + str(i) + 'image' + '.jpg', cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
     # cv2.imwrite('./results/heatmaps/'+ str(i) + 'heatmap' + '.jpg', heatmap)
 
 ## img = mpimg.imread('./test_images/test1.jpg')
@@ -38,10 +39,13 @@ for i in tqdm(range(start, stop)):
 
 
 ## MOVIEPY
-# from moviepy.editor import VideoFileClip
-#
-# test_output = 'project_video_output2.mp4'
-# clip1 = VideoFileClip("project_video.mp4")
-# cf = Car_Finder()
-# white_clip = clip1.fl_image(cf.process_image) #NOTE: this function expects color images!!
-# white_clip.write_videofile(test_output, audio=False)
+from moviepy.editor import VideoFileClip
+
+t = time.time()
+test_output = 'project_video_output_X2.mp4'
+clip1 = VideoFileClip("project_video.mp4")
+cf = Car_Finder()
+white_clip = clip1.fl_image(cf.process_image) #NOTE: this function expects color images!!
+white_clip.write_videofile(test_output, audio=False)
+t2 = time.time()
+print('time: ', (t2 - t) / 60)
