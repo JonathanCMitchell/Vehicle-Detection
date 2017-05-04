@@ -123,9 +123,28 @@ THE END
 
 
 
-##### Video of result
+### Videos
+#### reset heatmap every 30 frames
+<a href="http://www.youtube.com/embed/-AV2jysSHcQ
+" target="_blank"><img src="http://img.youtube.com/vi/-AV2jysSHcQ/0.jpg" 
+alt="Watch Video Here" width="480" height="180" border="10" /></a>
 
+#### reset heatmap every 20 frames
+<a href="http://www.youtube.com/embed/GdUVhW7qM3w
+" target="_blank"><img src="http://img.youtube.com/vi/GdUVhW7qM3w/0.jpg" 
+alt="Watch Video Here" width="480" height="180" border="10" /></a>
 
 ##### Reflection: 
 
-##### Technologies used:
+#### Twitter: [@jonathancmitch](https://twitter.com/jonathancmitch)
+#### Linkedin: [https://www.linkedin.com/in/jonathancmitchell](https://twitter.com/jonathancmitch)
+#### Github: [github.com/jonathancmitchell](github.com/jonathancmitchell)
+#### Medium: [https://medium.com/@jmitchell1991](https://medium.com/@jmitchell1991)
+
+#### Tools used
+* [Numpy](http://www.numpy.org/)
+* [OpenCV3](http://pandas.pydata.org/)
+* [Python](https://www.python.org/)
+* [Pandas](http://pandas.pydata.org/)
+* [Matplotlib](http://matplotlib.org/api/pyplot_api.html)
+* [SciKit-Learn](http://scikit-learn.org/)
