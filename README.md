@@ -56,6 +56,7 @@ Some example images for testing your pipeline on single frames are located in th
 * Grid out a section of the image (height from 400 to 656) and all width.  (line 138)
 * Extract the HOG features for the entire section of the image
 # TODO: insert ./output_imagesHOG_subsample_search_region.png add (you can see the regions here)
+* ![HOG_subsample](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsample_search_region.png)
 * Above: You can see the region we are using for our sub image
 * Scale the extracted section by a `scale` parameter (line 142)
 * Extract each channel from the scaled image
