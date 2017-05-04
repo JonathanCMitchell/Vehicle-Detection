@@ -105,6 +105,7 @@ alt="Watch Video Here" width="480" height="180" border="10" /></a>
 alt="Watch Video Here" width="480" height="180" border="10" /></a>
 
 ##### Reflection: 
+I spent a lot of time working with the heat maps. I tried subtracting values from the previous heat map coordinates to remove its potential to pass through the thresholding function, however that eliminates the possibility of detecting a car in the previous heatmap's region. Eventually I discovered that if I reset the heatmap I am able to detect and draw the boxes for the current detection, using the past 20 heatmap's values in an averaging function.  
 
 #### Twitter: [@jonathancmitch](https://twitter.com/jonathancmitch)
 #### Linkedin: [https://www.linkedin.com/in/jonathancmitchell](https://twitter.com/jonathancmitch)
