@@ -55,7 +55,6 @@ Some example images for testing your pipeline on single frames are located in th
 ##### In Car_Finder.find_cars
 * Grid out a section of the image (height from 400 to 656) and all width.  (line 138)
 * Extract the HOG features for the entire section of the image
-# TODO: insert ./output_imagesHOG_subsample_search_region.png add (you can see the regions here)
 * ![HOG_subsample](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsample_search_region.png)
 * Above: You can see the region we are using for our sub image between the light and dark blue lines
 * Scale the extracted section by a `scale` parameter (line 142)
@@ -111,15 +110,16 @@ Some example images for testing your pipeline on single frames are located in th
 * Then inside Extract_features we grab all of these features for each image and then add them to our `features` list. So `features` contains the features for the entire data set where a `file_feature` contains the features for one image
 THE END
 
-# TODO: insert parameter selections below
 #### Details (Parameter selection) (tuning params.ods)
+* ![tuning_params](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/tuning_params.png)
+* Above: I tried these different parameters and tested the SVM's predictions on a single image. I chose the YCrCb color space because it gave me the best accuracy at training time
 * ![YCrCb_allChannel](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/YCrCb_detection_ALL_Channel.png)
-# TODO: Write description for ALL channel YCrCb
-* This gives us the best result with an accuracy of # TODO: Insert accuracy
+* Above: Result of training using YCrCb color space
+* This gives us the best result with an accuracy of 99.5. Don't be fooled by the 1.0 in the grid of parameter tests, that was only sampled for one image
 * ![LUV_detection_L_channel](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/LUV_detection_L_channel.png)
-# TODO: Write description for LUV_detection_L_channel
+* Above: Result of training using L channel in LUV color space
 * ![LUV_detection_V_channel](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/LUV_detection_V_channel.png)
-# TODO: Write description for LUV_detection_V_channel 
+* Above: Result of training using V channel in LUV color space 
 
 
 
