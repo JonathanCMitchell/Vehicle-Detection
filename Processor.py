@@ -10,7 +10,7 @@ from Car_Detector import Car_Detector
 df = pd.read_csv('./project_video_data/driving.csv')
 
 cf = Car_Detector()
-#
+# I analyzed all the images in the dataset individually to evaluate threshold parameters
 start = 0
 stop = 1250
 for i in tqdm(range(start, stop)):
@@ -22,7 +22,7 @@ for i in tqdm(range(start, stop)):
     cv2.imwrite('./final_results/thresholded_heatmaps/'+ str(i) + 'thresholded_heatmap' + '.jpg', thresholded_heatmaps)
 
 #
-# #
+# This is used to create the movie
 # from moviepy.editor import VideoFileClip
 #
 # t = time.time()

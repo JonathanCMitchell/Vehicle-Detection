@@ -37,3 +37,5 @@ original_image_800.png
 thresholded_averaged_heatmap.png
 thresholded_heatmap_withboundingrectFromFindContours.png
 videos/
+*.iypnb
+find_cars.py

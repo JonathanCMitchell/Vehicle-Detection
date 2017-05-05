@@ -25,7 +25,7 @@
 <div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/pipeline1.jpg"/></div>
 <div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/pipeline2.jpg"/></div>
 
-##### In Car_helpers.find_cars (helpers.py)
+##### In Car_helpers.find_cars (helpers.py) implemented in get_detections() inside Car_Detector.py
 * Extract out a section of the image (height from ystart to ystop as defined by the function caller in Car_Detector.py) and all width.
 * Extract the HOG features for the entire section of the image
 * ![HOG_subsample](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsample_search_region.png)
@@ -33,12 +33,11 @@
 * Scale the extracted section by a `scale` parameter (line 168)
 * Extract each channel from the scaled image
 * Calculate the number of blocks in x and y
-* Define a search window
+* Create multiple search windows with different scales and different regions (I used 3)
 * Create a step size `(cells_per_window / step_size) = % overlap`
 * Discover how many vertical and horizontal steps you will have
 * Calculate [HOG](http://scikit-image.org/docs/dev/auto_examples/features_detection/plot_hog.html) features for each channel lines 
 * Consider the scaled image to be in position space, not image space. We treat sections of the image as a grid in terms of whole integer values instead of in pixel values
-# TODO: Show grid image (take picture on phone for it)
 * We will move from grid space back into image space later on don't worry
 * For now, consider xpos and ypos to be grid positions (from left to right)
 * Iterate through the grid (in y then x) lines
@@ -63,7 +62,7 @@
 
 * ![image_heatmap_sidebyside](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/processed_test_img1_and_heatmap.png)
 * As you can see, sometimes we get detections that are false positives, in order to remove these false positives we apply a thresholding function
-* Remove the values where the heatmap's values are < 20. So it takes ~4 heat maps to pass through the thresholder
+* Remove the values where the heatmap's values are < threshold. So it takes ~4 heat maps to pass through the thresholder
 * Before we threshold, we take an average of the last 10 heat maps if 10 heat maps have been saved, then we insert this map into our thresholder
 * Averaging allows us to rule out bad values and creates a smoother transition between frames
 * Then we find the contours for the binary image, (which are basically the large shapes created from the heatmap)
@@ -109,6 +108,13 @@ I tried a lot of different methods to get the most accurate pipeline. In theory,
 The heatmap summming approach allows me to work with whole number thresholds instead of decimal thresholds (which are used in the averaging approach). Other than that it performs relatively the same as the averaging approach. I scaled the threshold value based on the number of heatmaps that are stored in the `heatmaps` queue.
 
 As I pass through the lightly colored road I lose a detection on the white vehicle. This is simply due to the model parameters and the prediction constraints. At this point I do not have an accurate prediction, so no bounding box is drawn. The model is only as good as the data.
+
+At one point in the video the bounding box splits into two bounding boxes when it should be one bounding box. This happened because cv2.findContours found two contours due to the upper and lower section of the bounding boxes.
+<div style="text-align:left"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/nc_averaged_heatmap.png"/></div>
+<div style="text-align:right"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/nc_binary_threshold.png"/></div>
+<div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/nc_double_box.png"/></div>
+* Above as you can see in this case the [cv2.findContours](http://docs.opencv.org/trunk/d4/d73/tutorial_py_contours_begin.html) function inside get_centroid_rectangles detects two different contours, and that's why two bounding boxes were drawn.
+
 
 
 #### Twitter: [@jonathancmitch](https://twitter.com/jonathancmitch)
