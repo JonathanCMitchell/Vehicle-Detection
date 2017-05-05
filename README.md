@@ -29,8 +29,9 @@
 * Extract out a section of the image (height from ystart to ystop as defined by the function caller in Car_Detector.py) and all width.
 * Extract the HOG features for the entire section of the image
 * Here is what HOG features gives us
-<div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_images.png"/></div>
+
 <div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_images_pyramid.png"/></div>
+
 * ![HOG_subsample](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsample_search_region.png)
 * Above: You can see the region we are using for our sub image between the light and dark blue lines
 * Scale the extracted section by a `scale` parameter (line 168)
