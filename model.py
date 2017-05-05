@@ -47,11 +47,21 @@ class model():
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(features_scaled, labels, test_size = 0.2, random_state = rand_state)
 
     def scale_data(self, data):
+        """
+        We perform mean std scaling on the data usnig StandardScaler() from Scikit learn's preprocessing module
+        :param data: 
+        :return: 
+        """
         self.X_scaler = StandardScaler().fit(data)
         scaled_X = self.X_scaler.transform(data)
         return scaled_X
 
     def train(self):
+        """
+        This function trains the model on the training data
+        I selected C = 0.01 so that my model is able to generalize better to data not seen in the training set
+        :return: 
+        """
         self.svc = LinearSVC(C=0.01)
         t = time.time()
         self.svc.fit(self.X_train, self.y_train)

@@ -16,41 +16,43 @@
 * Train a linear Support Vector Machine (lines 54 - 57)
 * Split the training data using `train_test_split`. Keep in mind that we are using training data as validation data, so there is some overfitting there. On a time series analysis it would be more robust to check a time-range and split validation data so that it has distinct times from the training data
 * Normalize the training data using mean - std normalization, using scikit's `StandardScaler` (line 49)
+* Set the LinearSVC's C parameter to 0.01 so that it's predictions will be less attached to the dataset and able to generalize better
 * Train the model on the data
 * Save the LinearSVC (Linear Support Vector Machine) to a pickle file as well as other parameters and move to step 2 (line 79)
 
-#### 2) Car detection (find_cars.py)
-##### In Car_Finder.find_cars
-* Grid out a section of the image (height from 400 to 656) and all width.  (line 138)
+#### 2) Car detection (helpers.py)
+##### In Car_helpers.find_cars (helpers.py)
+* Extract out a section of the image (height from ystart to ystop as defined by the function caller in Car_Detector.py) and all width.
 * Extract the HOG features for the entire section of the image
 * ![HOG_subsample](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsample_search_region.png)
 * Above: You can see the region we are using for our sub image between the light and dark blue lines
-* Scale the extracted section by a `scale` parameter (line 142)
+* Scale the extracted section by a `scale` parameter (line 168)
 * Extract each channel from the scaled image
 * Calculate the number of blocks in x and y
 * Define a search window
 * Create a step size `(cells_per_window / step_size) = % overlap`
 * Discover how many vertical and horizontal steps you will have
-* Calculate [HOG](http://scikit-image.org/docs/dev/auto_examples/features_detection/plot_hog.html) features for each channel lines (161 - 163)
+* Calculate [HOG](http://scikit-image.org/docs/dev/auto_examples/features_detection/plot_hog.html) features for each channel lines 
 * Consider the scaled image to be in position space, not image space. We treat sections of the image as a grid in terms of whole integer values instead of in pixel values
 # TODO: Show grid image (take picture on phone for it)
 * We will move from grid space back into image space later on don't worry
-* For now, consider xpos and ypos to be grid positions (from left to right) (lines 168-169)
-* Iterate through the grid (in y then x) lines (lines 166-168)
+* For now, consider xpos and ypos to be grid positions (from left to right)
+* Iterate through the grid (in y then x) lines
 * Grab a subsample of the hog features corresponding to the current cell
-* stack the features
-* go from grid space to pixel space (lines 179-180) now xleft and ytop are in image space
+* stack the features (line 203)
+* go from grid space to pixel space now xleft and ytop are in image space
 * extract the image patch (as defined by the boundaries of xleft and ytop and the window size)
 * get the spatial and histogram features using `spatial_features` and `hist_features` which are defined in helpers.py
-* Normalize the features using `X_scaler` which is from model.py
-* Stack the features (line 191)
+* Normalize the features using `X_scaler` from model.py
+* Stack the features 
 * Compute the prediction from the Support Vector Machine and the confidence
 * If the prediction is 1 and the decision function confidence is > 0.6 then we have detected a car
 * Rescale `xbox_left` and `ytop_draw` to go from our current image space (which is scaled) to real image space by multiplying it by the scaling factor `scale`
 * Use the drawing window dimensions to build (x1, y1, x2, y2) detection coordinates which will help us build a heatmap for the detected cars location
+* Add those detections to our `detections` list
+
 ##### In Car_Finder.get_centroid_rectangles
 * Take in the output from `Car_Finder.find_cars` (which are the detection coordinates above)
-* Reset the heatmap if 20 frames have passed since our last reset
 * Take in the detection coordinates and update the heatmap by adding 5 to each value within the heatmap's bounding box
 * ![hog_subsampling_on_test1](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsampling_on_test1.png)
 * Above, as you can see we have more than one bounding box. Therefore we need to apply a heatmap in order to determine an accurate region for the vehicle and only draw one box
@@ -58,7 +60,7 @@
 * ![image_heatmap_sidebyside](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/processed_test_img1_and_heatmap.png)
 * As you can see, sometimes we get detections that are false positives, in order to remove these false positives we apply a thresholding function
 * Remove the values where the heatmap's values are < 20. So it takes ~4 heat maps to pass through the thresholder
-* Before we threshold, we take an average of the last 20 heat maps if 20 heat maps have been saved, then we insert this map into our thresholder
+* Before we threshold, we take an average of the last 10 heat maps if 10 heat maps have been saved, then we insert this map into our thresholder
 * Averaging allows us to rule out bad values and creates a smoother transition between frames
 * Then we find the contours for the binary image, (which are basically the large shapes created from the heatmap)
 * Then we create bounding boxes from these contours
@@ -92,6 +94,9 @@ THE END
 * Above: Result of training using V channel in LUV color space 
 
 
+# TODO: Add video for heatmap cooling approach
+# TODO: Add video for heatmap summing approach
+# TODO: Add video for heatmap averaging
 
 ### Videos
 #### reset heatmap every 30 frames
@@ -105,7 +110,12 @@ alt="Watch Video Here" width="480" height="180" border="10" /></a>
 alt="Watch Video Here" width="480" height="180" border="10" /></a>
 
 ##### Reflection: 
-I spent a lot of time working with the heat maps. I tried subtracting values from the previous heat map coordinates to remove its potential to pass through the thresholding function, however that eliminates the possibility of detecting a car in the previous heatmap's region. Eventually I discovered that if I reset the heatmap I am able to detect and draw the boxes for the current detection, using the past 20 heatmap's values in an averaging function.  
+I tried a lot of different methods to get the most accurate pipeline. In theory, saving the state of the heatmap for subsequent images should work if you cool the regions where there are not current detections. This approach seems to work fairly well as you can see in the Video for heatmap cooling above. However, it involves storing more information because you have to save the state of the current heatmap to memory and it increases computation time. I like the idea of it, although determining the thresholds for it was rather difficult and involved a fair amount of evaluation.
+
+The heatmap summming approach allows me to work with whole number thresholds instead of decimal thresholds (which are used in the averaging approach). Other than that it performs relatively the same as the averaging approach. I scaled the threshold value based on the number of heatmaps that are stored in the `heatmaps` queue.
+
+As I pass through the lightly colored road I lose a detection on the white vehicle. This is simply due to the model parameters and the prediction constraints. At this point I do not have an accurate prediction, so no bounding box is drawn. The model is only as good as the data.
+
 
 #### Twitter: [@jonathancmitch](https://twitter.com/jonathancmitch)
 #### Linkedin: [https://www.linkedin.com/in/jonathancmitchell](https://twitter.com/jonathancmitch)
