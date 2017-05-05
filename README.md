@@ -4,14 +4,14 @@
 * model.py (builds SVM classifier and trains on training data)
 * Processor.py (overlaying processor that runs the pipeline on a video stream input)
 * settings.py (settings for tuned parameters)
-* find_cars.py (contains Car_Finder class that applies the model to detect cars and draws rectangular boxes on images)
-* helpers.py (contains helper functions for feature extraction)
+* Car_Detector.py (contains Car_Detector class that applies the model to detect cars and draws rectangular boxes on images)
+* helpers.py (contains helper functions for feature extraction and sliding window implementation)
 ## Training data:
-* Our training dataset consists of 17760 images. 8792 non-vehicles and 8968 vehicles. We split our training and validation sets with 80% 20% respectively. So our training dataset was ~14208 images.
-
+* Our training dataset consists of 17760 images. 8792 non-vehicles and 8968 vehicles. We split our training and validation sets with 80% 20% respectively. So our training dataset was ~14208 images. The data looks like this
+![car_not_car](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/examples/car_not_car.png)
 
 ### Process:
-#### 1) Training data (model.py)
+## 1) Training data (model.py)
 * Grab the training data and extract image paths and store them in the model class
 * Train a linear Support Vector Machine (lines 54 - 57)
 * Split the training data using `train_test_split`. Keep in mind that we are using training data as validation data, so there is some overfitting there. On a time series analysis it would be more robust to check a time-range and split validation data so that it has distinct times from the training data
@@ -20,12 +20,13 @@
 * Train the model on the data
 * Save the LinearSVC (Linear Support Vector Machine) to a pickle file as well as other parameters and move to step 2 (line 79)
 
-#### 2) Car detection (helpers.py)
-# Processing pipeline
+## 2) Car detection (helpers.py)
 <div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/pipeline1.jpg"/></div>
 <div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/pipeline2.jpg"/></div>
 
-##### In Car_helpers.find_cars (helpers.py) implemented in get_detections() inside Car_Detector.py
+### In Car_helpers.find_cars (helpers.py) implemented in get_detections() inside Car_Detector.py
+#### Sliding Window Implementation
+Instead of creating random sliding windows, extract features from an entire region of the image, and then use those cells to determine if there is a vehicle present.
 * Extract out a section of the image (height from ystart to ystop as defined by the function caller in Car_Detector.py) and all width.
 * Extract the HOG features for the entire section of the image
 * Here is what HOG features gives us
@@ -58,7 +59,7 @@
 * Use the drawing window dimensions to build (x1, y1, x2, y2) detection coordinates which will help us build a heatmap for the detected cars location
 * Add those detections to our `detections` list
 
-##### In Car_Finder.get_centroid_rectangles
+#### In Car_Finder.get_centroid_rectangles
 * Take in the output from `Car_Finder.find_cars` (which are the detection coordinates above)
 * Take in the detection coordinates and update the heatmap by adding 5 to each value within the heatmap's bounding box
 * ![hog_subsampling_on_test1](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsampling_on_test1.png)
@@ -74,7 +75,7 @@
 * ![HOG_subsampling_on_test4](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsampling_on_test4.png)
 * Above you can see that we have some false positives in the opposing lane, therefore we will rule out any boxes that occur at width < 50 because this area corresponds to the opposing highway. We do this on line 91 
 * Grab the coordinates of the bounding box and append them to `centroid_rectangles` which we will pass to our `draw_centroids` helper function
-##### Draw Centroids (in helpers.py)
+#### Draw Centroids (in helpers.py)
 * Get the centroid coordinates and the original image and draw a rectangle with the coordinates given
 * Return this image.
 * Note: I got the idea to find the contours from [Kyle Stewart-Frantz](https://github.com/kylesf)
@@ -89,8 +90,8 @@
 * Then inside Extract_features we grab all of these features for each image and then add them to our `features` list. So `features` contains the features for the entire data set where a `file_feature` contains the features for one image
 THE END
 
-#### Details (Parameter selection) (tuning params.ods)
-##### Color Space:
+### Details (Parameter selection) (tuning params.ods)
+#### Color Space:
 * ![tuning_params](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/tuning_params.png)
 * Above: I tried these different parameters and tested the SVM's predictions on a single image. I chose the YCrCb ALL channel color space because it gave me the best accuracy at training time
 * ![YCrCb_allChannel](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/YCrCb_detection_ALL_Channel.png)
@@ -108,13 +109,17 @@ THE END
 * I did not create a new image to draw on each time, I simply drew on the input image. I didn't want to process more things. 
 
 
-### Video of result
+## Video of result
 <a href="http://www.youtube.com/embed/YaHjdLbfChE
 " target="_blank"><img src="http://img.youtube.com/vi/YaHjdLbfChE/0.jpg" 
 alt="Watch Video Here" width="480" height="180" border="10" /></a>
 
 
-##### Reflection: 
+## Final Result Image:
+<div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/final_result.jpg"/></div>
+
+
+## Reflection: 
 I tried a lot of different methods to get the most accurate pipeline. In theory, saving the state of the heatmap for subsequent images should work if you cool the regions where there are not current detections. This approach seems to work fairly well as you can see in the Video for heatmap cooling above. However, it involves storing more information because you have to save the state of the current heatmap to memory and it increases computation time. I like the idea of it, although determining the thresholds for it was rather difficult and involved a fair amount of evaluation.
 
 The heatmap summming approach allows me to work with whole number thresholds instead of decimal thresholds (which are used in the averaging approach). Other than that it performs relatively the same as the averaging approach. I scaled the threshold value based on the number of heatmaps that are stored in the `heatmaps` queue.
