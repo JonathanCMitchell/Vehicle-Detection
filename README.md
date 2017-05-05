@@ -28,6 +28,8 @@
 ##### In Car_helpers.find_cars (helpers.py) implemented in get_detections() inside Car_Detector.py
 * Extract out a section of the image (height from ystart to ystop as defined by the function caller in Car_Detector.py) and all width.
 * Extract the HOG features for the entire section of the image
+* Here is what HOG features gives us
+<div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_images.png"/></div>
 * ![HOG_subsample](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/HOG_subsample_search_region.png)
 * Above: You can see the region we are using for our sub image between the light and dark blue lines
 * Scale the extracted section by a `scale` parameter (line 168)
@@ -113,7 +115,7 @@ At one point in the video the bounding box splits into two bounding boxes when i
 <div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/nc_averaged_heatmap.png"/></div>
 <div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/nc_binary_threshold1.png"/></div>
 <div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/nc_double_box.jpg"/></div>
-* Above as you can see in this case the [cv2.findContours](http://docs.opencv.org/trunk/d4/d73/tutorial_py_contours_begin.html) function inside get_centroid_rectangles detects two different contours, and that's why two bounding boxes were drawn.
+(Above) as you can see in this case the [cv2.findContours](http://docs.opencv.org/trunk/d4/d73/tutorial_py_contours_begin.html) function inside get_centroid_rectangles detects two different contours, and that's why two bounding boxes were drawn.
 
 
 
