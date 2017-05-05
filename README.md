@@ -21,6 +21,9 @@
 * Save the LinearSVC (Linear Support Vector Machine) to a pickle file as well as other parameters and move to step 2 (line 79)
 
 #### 2) Car detection (helpers.py)
+# Processing pipeline
+<div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/pipeline1.jpg"/></div>
+
 ##### In Car_helpers.find_cars (helpers.py)
 * Extract out a section of the image (height from ystart to ystop as defined by the function caller in Car_Detector.py) and all width.
 * Extract the HOG features for the entire section of the image
