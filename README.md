@@ -90,8 +90,9 @@
 THE END
 
 #### Details (Parameter selection) (tuning params.ods)
+##### Color Space:
 * ![tuning_params](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/tuning_params.png)
-* Above: I tried these different parameters and tested the SVM's predictions on a single image. I chose the YCrCb color space because it gave me the best accuracy at training time
+* Above: I tried these different parameters and tested the SVM's predictions on a single image. I chose the YCrCb ALL channel color space because it gave me the best accuracy at training time
 * ![YCrCb_allChannel](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/YCrCb_detection_ALL_Channel.png)
 * Above: Result of training using YCrCb color space
 * This gives us the best result with an accuracy of 99.5. Don't be fooled by the 1.0 in the grid of parameter tests, that was only sampled for one image
@@ -99,6 +100,13 @@ THE END
 * Above: Result of training using L channel in LUV color space
 * ![LUV_detection_V_channel](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/LUV_detection_V_channel.png)
 * Above: Result of training using V channel in LUV color space 
+#### Orientations:
+* I chose to use 9 orientations
+
+#### Performance Optimizations:
+* I stored all my image paths in a pandas dataframe. I processed each image and viewed the results to see how well my pipeline works. When using the summing method, I started out with a threshold of 0.6 * 10 ~ 60. I later tuned this threshold to be 0.58 * 10 = 58. If I used 56 I would start drawing boxes in the middle of the road.
+* I did not create a new image to draw on each time, I simply drew on the input image. I didn't want to process more things. 
+
 
 ### Video of result
 <a href="http://www.youtube.com/embed/YaHjdLbfChE
