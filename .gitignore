@@ -30,8 +30,6 @@ F_original_image_with_svmpredictions.png
 F_thresholded_heatmap_800.png
 final_results/
 heatmap_with_bounding_rect.png
-nc_averaged_heatmap.png
-nc_binary_threshold1.png
 nh_results/
 original_image_800.png
 thresholded_averaged_heatmap.png
