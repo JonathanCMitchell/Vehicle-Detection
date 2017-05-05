@@ -11,7 +11,7 @@ df = pd.read_csv('./project_video_data/driving.csv')
 cf = Car_Finder()
 #
 # start = 300
-# stop = 355
+# stop = 325
 # for i in tqdm(range(start, stop)):
 #     impath = df.iloc[[i]]['image_path'].values[0]
 #     img = mpimg.imread(impath)
@@ -42,7 +42,7 @@ cf = Car_Finder()
 from moviepy.editor import VideoFileClip
 
 t = time.time()
-test_output = 'project_video_output_X8.mp4'
+test_output = 'project_video_output_averaging.mp4'
 clip1 = VideoFileClip("project_video.mp4")
 cf = Car_Finder()
 white_clip = clip1.fl_image(cf.process_image) #NOTE: this function expects color images!!

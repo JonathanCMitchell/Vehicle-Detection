@@ -52,7 +52,7 @@ class model():
         return scaled_X
 
     def train(self):
-        self.svc = LinearSVC()
+        self.svc = LinearSVC(C=0.01)
         t = time.time()
         self.svc.fit(self.X_train, self.y_train)
         t2 = time.time()

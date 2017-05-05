@@ -45,15 +45,10 @@ def draw_labeled_boxes(img, labels, color = (0, 0, 255), thick = 6):
 
 
 class Car_Finder():
-    def __init__(self, ystart = 400, ystop = 656, scale = 1.5):
-        self.ystart = ystart
-        self.ystop = ystop
-        self.scale = scale
-        self.threshold = 7
+    def __init__(self):
+        self.threshold = 30
         self.smooth_factor = 8
-        self.heatmaps =
-        self.recent_detections = []
-        self.detections = [] # remove later
+        self.heatmaps = collections.deque(maxlen = 10)
         self.count = 0
         self.found = None
         self.heat = np.zeros((settings.IMG_HEIGHT, settings.IMG_WIDTH), dtype = np.float32) # maybe chance dtype
@@ -61,7 +56,7 @@ class Car_Finder():
 
     def process_image(self, img):
         self.count += 1
-        centroid_rectangles = self.get_centroid_rectangles(img)
+        centroid_rectangles, heat = self.get_centroid_rectangles(img)
 
         draw_img_centroids = draw_centroids(img, centroid_rectangles)
         # labels = label(heat)
@@ -69,33 +64,44 @@ class Car_Finder():
         return draw_img_centroids
 
     def get_centroid_rectangles(self, img):
-        # TODO: Reset heat map each time
-        # self.reset_heatmaps()
         centroid_rectangles = []
-        detections = self.find_cars(img, self.ystart, self.ystop, self.scale, svc, X_scaler, orient, pix_per_cell,
+        detection_general = []
+        # Use multiple windows
+        ystart = 400
+        ystop = 656
+        scale = 1.5
+        centroid_rectangles = []
+        detection_general.append(self.find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell,
                                     cell_per_block,
                                     spatial_size,
-                                    hist_bins)
-        if len(detections) > 0:
-            self.found = True
+                                    hist_bins))
 
+
+        ystart = 432
+        ystop = 560
+        scale = 2
+        detection_general.append(self.find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell,
+                                                cell_per_block,
+                                                spatial_size,
+                                                hist_bins))
+
+        ystart = 400
+        ystop = 560
+        scale = 3
+        detection_general.append(self.find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell,
+                                                cell_per_block,
+                                                spatial_size,
+                                                hist_bins))
+        detections = [detection for detections in detection_general for detection in detections]
+
+        # Now we have a list of detections, let's locate the detection in there that has the max length
 
 
         self.update_heatmap(detections)
         self.cool_heatmap(detections)
         self.heatmaps.append(self.heat)
 
-        # instead of self.heat use average of last 20 heat maps
-        # TODO: Fix below took out averaging
-        if len(self.heatmaps) > self.smooth_factor:
-            heat = np.mean(self.heatmaps[-self.smooth_factor:], axis = 0).astype(np.uint8)
-        else:
-            heat = self.heat.astype(np.uint8)
-
-        # heat = self.heat.astype(np.uint8)
-
-
-        binary = self.apply_threshold(heat, self.threshold)
+        binary = self.apply_threshold(self.heat.astype(np.uint8), self.threshold)
 
         _, contours, hier = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         for contour in contours:
@@ -104,56 +110,33 @@ class Car_Finder():
             x, y, w, h = rect
             centroid_rectangles.append([x, y, x+w, y+h])
         # Now heatmap is binary so we apply contours
-        return centroid_rectangles
+        return centroid_rectangles, self.heat
 
-    # def reset_heatmaps(self):
-    #     # Reset heatmaps every 30 frames (20 frames also works)
-    #     if self.count % 20 == 0:
-    #         self.heat = np.zeros((settings.IMG_HEIGHT, settings.IMG_WIDTH), dtype = np.float32) # maybe chance dtype
+
 
     def update_heatmap(self, detections):
-        # print('inside update_heatmap detections length: ', len(detections))
         for (x1, y1, x2, y2) in detections:
             self.heat[y1:y2, x1:x2] += 1
 
     def cool_heatmap(self, detections):
-
-        # plt.imshow(self.heat, cmap='gray')
-        # plt.title('self.heatmap before cooling')
-
-        nonzero = self.heat.nonzero()
-        nonzerox = nonzero[1]
-        nonzeroy = nonzero[0]
-        # plt.imshow(self.heat)
-        # plt.show()
-        # if self.found:
-            # If we find detections for the image cool from area NOT in current detection boundary
-            # cool_maps = []
         cool_map = np.ones_like((self.heat), dtype = np.uint8)
 
         for (x1, y1, x2, y2) in detections:
             cool_map[y1:y2, x1:x2] = 0
 
-        for i in range(len(detections)):
-            heatmap = np.subtract(self.heat, cool_map)
-            self.heat = heatmap.clip(min = 0)
-
-            # plt.imshow(self.heat, cmap='gray')
-            # plt.title('self.heatmap after cooling')
-            # plt.show()
-
-
-        # else:
-            # Otherwise, cool the entire
-            # print('detections not found for this frame')
-
+        for _ in range(len(detections)):
+            heat = np.subtract(self.heat, cool_map)
+            self.heat = heat.clip(min = 0)
 
     def apply_threshold(self, heatmap, threshold):
         # TODO: Impement next two line averaging function
-        # if len(self.heatmaps) > self.smooth_factor:
-        #     heatmap = np.mean(self.heatmaps[-self.smooth_factor:], axis = 0).astype(np.float32)
+        # TODO: Sum up the last 10 heatmaps and compute the average, then compute the average average
+        if len(self.heatmaps) > self.smooth_factor:
+            heatmap = np.mean(self.heatmaps, axis = 0).astype(np.uint8)
+        else:
+            heatmap = heatmap
         # Threshold
-        _, binary = cv2.threshold(heatmap, 11, 255, cv2.THRESH_BINARY)
+        _, binary = cv2.threshold(heatmap, threshold, 255, cv2.THRESH_BINARY)
         return binary
 
     def find_cars(self, img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size,
@@ -238,7 +221,7 @@ class Car_Finder():
                 confidence = svc.decision_function(test_features)
 
                 if test_prediction == 1 and confidence > 0.6:
-                    print('test_prediction==1 and confidence > 0.6 at', self.count)
+                    # print('test_prediction==1 and confidence > 0.6 at', self.count)
                     xbox_left = np.int(xleft * scale)
                     ytop_draw = np.int(ytop * scale)
                     win_draw = np.int(window * scale)
