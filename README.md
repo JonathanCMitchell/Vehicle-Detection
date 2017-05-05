@@ -23,6 +23,7 @@
 #### 2) Car detection (helpers.py)
 # Processing pipeline
 <div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/pipeline1.jpg"/></div>
+<div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/pipeline2.jpg"/></div>
 
 ##### In Car_helpers.find_cars (helpers.py)
 * Extract out a section of the image (height from ystart to ystop as defined by the function caller in Car_Detector.py) and all width.
@@ -96,21 +97,11 @@ THE END
 * ![LUV_detection_V_channel](https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/LUV_detection_V_channel.png)
 * Above: Result of training using V channel in LUV color space 
 
-
-# TODO: Add video for heatmap cooling approach
-# TODO: Add video for heatmap summing approach
-# TODO: Add video for heatmap averaging
-
-### Videos
-#### reset heatmap every 30 frames
-<a href="http://www.youtube.com/embed/-AV2jysSHcQ
-" target="_blank"><img src="http://img.youtube.com/vi/-AV2jysSHcQ/0.jpg" 
+### Video of result
+<a href="http://www.youtube.com/embed/YaHjdLbfChE
+" target="_blank"><img src="http://img.youtube.com/vi/YaHjdLbfChE/0.jpg" 
 alt="Watch Video Here" width="480" height="180" border="10" /></a>
 
-#### reset heatmap every 20 frames
-<a href="http://www.youtube.com/embed/GdUVhW7qM3w
-" target="_blank"><img src="http://img.youtube.com/vi/GdUVhW7qM3w/0.jpg" 
-alt="Watch Video Here" width="480" height="180" border="10" /></a>
 
 ##### Reflection: 
 I tried a lot of different methods to get the most accurate pipeline. In theory, saving the state of the heatmap for subsequent images should work if you cool the regions where there are not current detections. This approach seems to work fairly well as you can see in the Video for heatmap cooling above. However, it involves storing more information because you have to save the state of the current heatmap to memory and it increases computation time. I like the idea of it, although determining the thresholds for it was rather difficult and involved a fair amount of evaluation.
