@@ -44,7 +44,7 @@ Instead of creating random sliding windows, extract features from an entire regi
 * Calculate [HOG](http://scikit-image.org/docs/dev/auto_examples/features_detection/plot_hog.html) features for each channel lines 
 * Consider the scaled image to be in position space, not image space. We treat sections of the image as a grid in terms of whole integer values instead of in pixel values. See image below on how to grid looks
 
-<div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/hand_gridout.JPG"/></div>
+<div style="text-align:center"><img src="https://github.com/JonathanCMitchell/Vehicle-Detection/blob/master/output_images/hand_gridout.jpg"/></div>
 
 * We will move from grid space back into image space later on don't worry
 * For now, consider xpos and ypos to be grid positions (from left to right)
