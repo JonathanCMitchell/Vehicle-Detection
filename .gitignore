@@ -37,3 +37,7 @@ thresholded_heatmap_withboundingrectFromFindContours.png
 videos/
 *.iypnb
 find_cars.py
+output_images/270image.jpg
+output_images/F_original_image_hog_features_YChannel.png
+output_images/train_not_vehicle.png
+output_images/train_video.png
