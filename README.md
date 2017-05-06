@@ -103,7 +103,7 @@ THE END
 * Above: Result of training using V channel in LUV color space 
 #### Orientations:
 * I chose to use 9 orientations
-
+ 
 #### Performance Optimizations:
 * I stored all my image paths in a pandas dataframe. I processed each image and viewed the results to see how well my pipeline works. When using the summing method, I started out with a threshold of 0.6 * 10 ~ 60. I later tuned this threshold to be 0.58 * 10 = 58. If I used 56 I would start drawing boxes in the middle of the road.
 * I did not create a new image to draw on each time, I simply drew on the input image. I didn't want to process more things. 
