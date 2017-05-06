@@ -112,9 +112,14 @@ THE END
 * I did not create a new image to draw on each time, I simply drew on the input image. I didn't want to process more things. 
 
 
-## Video of result
+## Video of result 
 <a href="http://www.youtube.com/embed/YaHjdLbfChE
 " target="_blank"><img src="http://img.youtube.com/vi/YaHjdLbfChE/0.jpg" 
+alt="Watch Video Here" width="480" height="180" border="10" /></a>
+
+# Video of lane line detection + object detection
+<a href="http://www.youtube.com/embed/YnIMM0QoqFU
+" target="_blank"><img src="http://img.youtube.com/vi/YnIMM0QoqFU/0.jpg" 
 alt="Watch Video Here" width="480" height="180" border="10" /></a>
 
 
